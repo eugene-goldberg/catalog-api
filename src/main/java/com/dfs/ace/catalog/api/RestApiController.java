@@ -37,7 +37,8 @@ public String searchUrl;
     private JSONArray fetchAll() {
         JSONParser jsonParser = new JSONParser();
         JSONArray results = new JSONArray();
-        Object object;
+        Object object = new Object();
+        StringBuilder responce = new StringBuilder();
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(
@@ -55,11 +56,19 @@ public String searchUrl;
                     new InputStreamReader((response.getEntity().getContent())));
 
             String output;
-            System.out.println("Output from Server .... \n");
+
+//            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
+                responce.append(output);
+                try {
+                    object = jsonParser.parse(responce.toString());
+                }
+                catch (ParseException e){
+
+                }
 
                 try {
-                    object = jsonParser.parse(output);
+
                     JSONObject jsonObject = (JSONObject) object;
                     JSONObject outerHits =  (JSONObject) jsonObject.get("hits");
                     JSONArray innerHits = (JSONArray) outerHits.get("hits");
@@ -73,8 +82,8 @@ public String searchUrl;
                         }
                     }
                 }
-                catch (ParseException e) {
-                    e.printStackTrace();
+                catch (Exception e) {
+                    //e.printStackTrace();
                 }
             }
 
@@ -89,6 +98,8 @@ public String searchUrl;
             e.printStackTrace();
         }
 
+        System.out.println(responce);
+
         return results;
     }
 
@@ -96,6 +107,8 @@ public String searchUrl;
     @GetMapping
     private JSONArray fetchMatch(HttpServletRequest request) {
         String queryString="";
+        StringBuilder responce = new StringBuilder();
+        Object object = new Object();
         try {
              queryString = java.net.URLDecoder.decode(request.getQueryString(), "UTF-8");
         }
@@ -124,7 +137,7 @@ public String searchUrl;
 
         JSONParser jsonParser = new JSONParser();
         JSONArray results = new JSONArray();
-        Object object;
+
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             String finalReq = url;
@@ -146,9 +159,14 @@ public String searchUrl;
             String output;
             System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-
+                responce.append(output);
                 try {
-                    object = jsonParser.parse(output);
+                    object = jsonParser.parse(responce.toString());
+                }
+                catch (ParseException e){
+
+                }
+                try {
                     JSONObject jsonObject = (JSONObject) object;
                     JSONObject outerHits =  (JSONObject) jsonObject.get("hits");
                     JSONArray innerHits = (JSONArray) outerHits.get("hits");
@@ -162,8 +180,8 @@ public String searchUrl;
                         }
                     }
                 }
-                catch (ParseException e) {
-                    e.printStackTrace();
+                catch (Exception e) {
+                    //e.printStackTrace();
                 }
             }
 
